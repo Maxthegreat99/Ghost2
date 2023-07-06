@@ -4,8 +4,8 @@ A plugin for TShock that allows admins to make themselves or players invisible t
 **NOTE: consider twice before giving this effect to your players as it may give them an unfair advantage in certain circumstances**
 
 - Originally made by [DannyDan77](https://github.com/DannyDan77)
-- Updated for 1.4 by [moisterrific](https://github.com/DannyDan77)
-- Updated to 1.4.4.9 by Maxthegreat99
+- Updated for `1.4` by [moisterrific](https://github.com/DannyDan77)
+- Updated to `1.4.4.9` by Maxthegreat99
 
 ## Original plugin description
 https://github.com/DannyDan77/Ghost
@@ -23,7 +23,7 @@ What is actually happening though, is far more complicated. This kind of invisib
 ## Known Issues
 This plugin works for the most part, but there are a few caveats:
 
-- Ghost will automatically turn off if you use an item (such as magic mirror) or command (such as /home) to return to your spawnpoint
+- Ghost will automatically turn off if you use an item (such as magic mirror) or command (such as `/home`) to return to your spawnpoint
 - If you wander too far from the original point of where you enabled ghost, chunks of the world will fail to load (client side only, visible to only you). This can be fixed by disabling and re-enabling ghost. 
 - If you disable ghost in the vicinity of other players, your character appearance will not immediately load and you will look kinda like the default character you see in character creation menu (only visible to other players).
 
