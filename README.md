@@ -1,5 +1,6 @@
 # Ghost2
-A plugin for TShock that allows admins to make themselves or players invisible to others. 
+A plugin for TShock that allows admins to make themselves or players invisible to others.
+
 **NOTE: consider twice before giving this effect to your players as it may give them n unnfair advantage in certain circumstances**
 
 - Originally made by [DannyDan77](https://github.com/DannyDan77)
