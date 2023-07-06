@@ -1,8 +1,10 @@
 # Ghost2
-A plugin for TShock that allows admins to become invisible to their players. 
+A plugin for TShock that allows admins to make themselves or players invisible to others. 
+**NOTE: consider twice before giving this effect to your players as it may give them n unnfair advantage in certain circumstances**
 
-- Originally made by DannyDan77
-- Updated for 1.4 by moisterrific
+- Originally made by [DannyDan77](https://github.com/DannyDan77)
+- Updated for 1.4 by [moisterrific](https://github.com/DannyDan77)
+- Updated to 1.4.4.9 by Maxthegreat99
 
 ## Original plugin description
 https://github.com/DannyDan77/Ghost
@@ -13,7 +15,8 @@ What is actually happening though, is far more complicated. This kind of invisib
 
 
 ## User Instructions
-- type `/ghost` to toggle it on or off
+- type `/ghost` to toggle it on or off for yourself.
+- to give the invisible effect to other players type a second parameter like so: `/ghost "Max The Great"`
 - May spook unsuspecting players, use at your own risk!
 
 ## Known Issues
