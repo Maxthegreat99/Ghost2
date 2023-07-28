@@ -21,7 +21,7 @@ namespace Ghost
 
         public override string Description => "A plugin that allows admins to become completely invisible to players.";
 
-        public override Version Version => new Version(2, 1);
+        public override Version Version => new Version(2, 1, 1);
 
         public override void Initialize()
         {
