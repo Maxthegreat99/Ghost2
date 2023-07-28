@@ -25,7 +25,6 @@ This plugin works for the most part, but there are a few caveats:
 
 - Ghost will automatically turn off if you use an item (such as magic mirror) or command (such as `/home`) to return to your spawnpoint
 - If you wander too far from the original point of where you enabled ghost, chunks of the world will fail to load (client side only, visible to only you). This can be fixed by disabling and re-enabling ghost. 
-- If you disable ghost in the vicinity of other players, your character appearance will not immediately load and you will look kinda like the default character you see in character creation menu (only visible to other players).
 
 ## Notes
 - While ghosted, you will be completely invisible and invincible in PvP, however regular mobs can still damage you (even your attacks will be invisible!).
