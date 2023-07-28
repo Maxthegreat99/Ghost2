@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Reflection;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
 using Microsoft.Xna.Framework;
-using Terraria.Social.Base;
 using Terraria.GameContent.NetModules;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.Net;
+using System.Collections.Generic;
 
 namespace Ghost
 {
@@ -23,12 +21,20 @@ namespace Ghost
 
         public override Version Version => new Version(2, 1, 1);
 
+        public List<int> playersGhosted = new();
+
         public override void Initialize()
         {
+            ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
+
             Commands.ChatCommands.Add(new Command("ghost.ghost", OnGhost, "ghost", "vanish"));
+            Commands.ChatCommands.Add(new Command("ghost.hardghost", OnHardGhost, "hardghost", "hardvanish", "hghost", "hvanish"));
         }
+
         private void ShowPlayerTo(TSPlayer target, TSPlayer sender)
         {
+            target.SendData(PacketTypes.PlayerInfo, "", sender.Index);
+            target.SendData(PacketTypes.PlayerUpdate, "", sender.Index);
 
             float slot = 0f;
             for (int k = 0; k < NetItem.InventorySlots; k++)
@@ -191,8 +197,6 @@ namespace Ghost
                 slot++;
             }
 
-
-
             target.SendData((PacketTypes)4, sender.Name, sender.Index, 0f, 0f, 0f, 0);
             target.SendData((PacketTypes)42, "", sender.Index, 0f, 0f, 0f, 0);
             target.SendData((PacketTypes)16, "", sender.Index, 0f, 0f, 0f, 0);
@@ -223,8 +227,87 @@ namespace Ghost
                     NetManager.Instance.SendToClient(response, sender.Index);
                 }
             }
+
+            
+        }
+        void GhostPlayer(TSPlayer target, Player ttarget)
+        {
+            int i = Projectile.NewProjectile(spawnSource: new Terraria.DataStructures.EntitySource_DebugCommand(),
+                            target.LastNetPosition.X, target.LastNetPosition.Y,
+                            Vector2.Zero.X, Vector2.Zero.Y, 0, 0, 0, 16, 0, 0);
+            Main.projectile[i].timeLeft = 0;
+
+            NetMessage.SendData((int)PacketTypes.ProjectileNew, -1, -1, null, i);
+            ttarget.active = !ttarget.active;
+            NetMessage.SendData((int)PacketTypes.PlayerActive, -1, target.Index, null, target.Index, ttarget.active.GetHashCode());
         }
         void OnGhost(CommandArgs args)
+        {
+            if (!args.Player.RealPlayer && args.Parameters.Count < 1)
+            {
+                args.Player.SendErrorMessage("You can't ghost the console!");
+                return;
+            }
+            Player TplayerAffected = args.TPlayer;
+            TSPlayer playerAffected = args.Player;
+            if (args.Parameters.Count > 0)
+            {
+                if (TSPlayer.FindByNameOrID(args.Parameters[0]).Count < 1)
+                {
+                    args.Player.SendErrorMessage("Player not found!");
+                    return;
+                }
+                TplayerAffected = TSPlayer.FindByNameOrID(args.Parameters[0])[0].TPlayer;
+                playerAffected = TSPlayer.FindByNameOrID(args.Parameters[0])[0];
+            }
+
+            if (!TplayerAffected.active)
+            {
+                args.Player.SendErrorMessage("target already has Hard Ghost enabled(or is inactive)! use /hghost to disable Hard Ghost.");
+                return;
+            }
+
+
+            //is player not ghosted?
+            if (!playersGhosted.Contains(playerAffected.TPlayer.whoAmI))
+            {
+                playersGhosted.Add(playerAffected.TPlayer.whoAmI);
+
+                GhostPlayer(playerAffected, TplayerAffected);
+
+                TplayerAffected.active = true;
+
+                //resets things like grapples which arent sent to the target
+                playerAffected.Teleport(playerAffected.TPlayer.position.X, playerAffected.TPlayer.position.Y);
+
+                foreach (TSPlayer player in TShock.Players)
+                {
+                    
+                    if (player == null || player.TPlayer.whoAmI == TplayerAffected.whoAmI)
+                        continue;
+
+                    if (player.HasPermission("ghost.see"))
+                    {
+                        player.SendData(PacketTypes.PlayerActive, "", playerAffected.Index, TplayerAffected.active.GetHashCode());
+                        ShowPlayerTo(player, playerAffected);
+                    }
+                }
+            }
+            else
+            {
+                playersGhosted.Remove(playerAffected.TPlayer.whoAmI);
+
+                playerAffected.Teleport(playerAffected.TPlayer.position.X, playerAffected.TPlayer.position.Y);
+
+                NetMessage.SendData((int)PacketTypes.PlayerActive, -1, playerAffected.Index, null, playerAffected.Index, TplayerAffected.active.GetHashCode());
+                ShowPlayerTo(TSPlayer.All, playerAffected);
+            }
+
+            playerAffected.SendSuccessMessage($"{(!playersGhosted.Contains(playerAffected.TPlayer.whoAmI) ? "Dis" : "En")}abled Ghost.");
+            args.Player.SendSuccessMessage($"Player {playerAffected.Name} has now Ghost {(!playersGhosted.Contains(playerAffected.TPlayer.whoAmI) ? "Dis" : "En")}abled.");
+
+        }
+        void OnHardGhost(CommandArgs args)
         {
 
             if (!args.Player.RealPlayer && args.Parameters.Count < 1)
@@ -247,33 +330,38 @@ namespace Ghost
 
             }
 
+            if (playersGhosted.Contains(playerAffected.TPlayer.whoAmI))
+            {
+                args.Player.SendErrorMessage("target already has Ghost enabled! use /ghost to disable Ghost.");
+                return;
+            }
 
-            int i = Projectile.NewProjectile(spawnSource: new Terraria.DataStructures.EntitySource_DebugCommand(), 
-                                             playerAffected.LastNetPosition.X, playerAffected.LastNetPosition.Y,
-                                             Vector2.Zero.X, Vector2.Zero.Y, 0, 0, 0, 16, 0, 0);
-            Main.projectile[i].timeLeft = 0;
 
-            NetMessage.SendData((int)PacketTypes.ProjectileNew, -1, -1, null, i);
-            TplayerAffected.active = !TplayerAffected.active;
-            NetMessage.SendData((int)PacketTypes.PlayerActive, -1, playerAffected.Index, null, playerAffected.Index, TplayerAffected.active.GetHashCode());
+            GhostPlayer(playerAffected, TplayerAffected);
 
             
             if (TplayerAffected.active)
             {
-                NetMessage.SendData((int)PacketTypes.PlayerInfo, -1, playerAffected.Index, null, playerAffected.Index);
-                NetMessage.SendData((int)PacketTypes.PlayerUpdate, -1, playerAffected.Index, null, playerAffected.Index);
+                playerAffected.Teleport(playerAffected.TPlayer.position.X, playerAffected.TPlayer.position.Y);
                 ShowPlayerTo(TSPlayer.All, playerAffected);
             }
 
-            playerAffected.SendSuccessMessage($"{(TplayerAffected.active ? "Dis" : "En")}abled Ghost.");
-            args.Player.SendSuccessMessage($"Player {playerAffected.Name} has now Ghost {(TplayerAffected.active ? "Dis" : "En")}abled.");
+            playerAffected.SendSuccessMessage($"{(TplayerAffected.active ? "Dis" : "En")}abled Hard Ghost.");
+            args.Player.SendSuccessMessage($"Player {playerAffected.Name} has now Hard Ghost {(TplayerAffected.active ? "Dis" : "En")}abled.");
         }
         
+        private void OnServerLeave(LeaveEventArgs args)
+        {
+            if (playersGhosted.Contains(args.Who) )
+                playersGhosted.Remove(args.Who);
+            
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-
+                ServerApi.Hooks.ServerLeave.Deregister(this, OnServerLeave);
             }
             base.Dispose(disposing);
         }
