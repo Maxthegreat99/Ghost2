@@ -19,13 +19,14 @@ namespace Ghost
 
         public override string Description => "A plugin that allows admins to become completely invisible to players.";
 
-        public override Version Version => new Version(2, 1, 1);
+        public override Version Version => new Version(2, 2);
 
         public List<int> playersGhosted = new();
 
         public override void Initialize()
         {
             ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
+            ServerApi.Hooks.NetGreetPlayer.Register(this, OnJoin);
 
             Commands.ChatCommands.Add(new Command("ghost.ghost", OnGhost, "ghost", "vanish"));
             Commands.ChatCommands.Add(new Command("ghost.hardghost", OnHardGhost, "hardghost", "hardvanish", "hghost", "hvanish"));
@@ -354,14 +355,33 @@ namespace Ghost
         {
             if (playersGhosted.Contains(args.Who) )
                 playersGhosted.Remove(args.Who);
-            
+
+            if(TShock.Players[args.Who].HasPermission("ghost.silentleave"))
+                TShock.Players[args.Who].SilentKickInProgress = true;
         }
 
+        private void OnJoin(GreetPlayerEventArgs args)
+        {
+            if (TShock.Players[args.Who].HasPermission("ghost.silentjoin"))
+                TShock.Players[args.Who].SilentJoinInProgress = true;
+
+            if (TShock.Players[args.Who].HasPermission("ghost.hghostonjoin"))
+            {
+                Commands.HandleCommand(TShock.Players[args.Who], "/hghost");
+                return;
+            }
+            if (TShock.Players[args.Who].HasPermission("ghost.ghostonjoin"))
+            {
+                Commands.HandleCommand(TShock.Players[args.Who], "/ghost");
+                return;
+            }
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 ServerApi.Hooks.ServerLeave.Deregister(this, OnServerLeave);
+                ServerApi.Hooks.NetGreetPlayer.Deregister(this, OnJoin);
             }
             base.Dispose(disposing);
         }
