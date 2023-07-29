@@ -4,7 +4,7 @@ A plugin for TShock giving admins multiple stealthing abilties, such as becoming
 ### NOTE: consider twice before giving these effects to your players as it may give them unfair advantages or even the ability to bypass anticheats
 
 - Originally made by [DannyDan77](https://github.com/DannyDan77)
-- Updated for `1.4` by [moisterrific](https://github.com/DannyDan77)
+- Updated for `1.4` by [moisterrific](https://github.com/moisterrific)
 - Updated to `1.4.4.9` by Maxthegreat99
 
 ## Original plugin description
