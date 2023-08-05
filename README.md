@@ -42,6 +42,7 @@ This plugin works for the most part, but there are a few caveats:
 - Ghost will automatically turn off if you use an item (such as magic mirror) or command (such as `/home`) to return to your spawnpoint
 - If you wander too far from the original point of where you enabled hard ghost, chunks of the world will fail to load (client side only, visible to only you). This can be fixed by disabling and re-enabling ghost.
 - If you die while normal ghost is enabled the effect will also automatically turn off.
+- silent join/leave cannot mute players sending join messages through TCR but only mutes join messages *ingame*.
 
 ## Notes
 - While ghosted, you will be completely invisible and invincible in PvP, however regular mobs can still damage you (even your attacks will be invisible!).
