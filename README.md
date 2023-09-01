@@ -40,18 +40,17 @@ What is actually happening though, is far more complicated. This kind of invisib
 This plugin works for the most part, but there are a few caveats:
 
 - Ghost will automatically turn off if you use an item (such as magic mirror) or command (such as `/home`) to return to your spawnpoint
-- If you wander too far from the original point of where you enabled hard ghost, chunks of the world will fail to load (client side only, visible to only you). This can be fixed by disabling and re-enabling ghost.
 - If you die while normal ghost is enabled the effect will also automatically turn off.
-- silent join/leave cannot mute players sending join messages through TCR but only mutes join messages *ingame*.
+- silent join/leave cannot mute player joining messages through TCR but only mutes join messages *ingame*.
 
 ## Notes
 - While ghosted, you will be completely invisible and invincible in PvP, however regular mobs can still damage you (even your attacks will be invisible!).
-- While hard ghosted, regular mobs will not spawn around you unless other non-ghosted players are nearby. 
+- While hard ghosted, regular mobs will not spawn around you unless other non-ghosted players are nearby.
+- While hard ghosted, you may experience some lag or delay with the world loading around you.
 - If you are hard ghosted in a boss fight, if all other players are dead the boss will despawn.
-- You will appear completely invisible and not be listed under the `/who` command as well as being unlisted in the server console.(using `/hghost` only)
+- You will appear completely invisible and not be listed under the `/who` command as well as being unlisted in the server console. (using `/hghost` only)
 - You can still chat with the rest of the players as usual.
-- If you teleport to other players while hard ghosted, chunks of your world may not be fully loaded.
-- Your character will not show up in the online players/PvP grid style GUI (Mobile).
+- Your character will not show up in the online players/PvP grid style GUI in hard ghost (Mobile).
 
 ## Forked repository
 https://github.com/moisterrific/Ghost2
